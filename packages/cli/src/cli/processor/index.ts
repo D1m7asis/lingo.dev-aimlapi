@@ -5,6 +5,7 @@ import { LocalizerFn } from "./_base";
 import { createLingoLocalizer } from "./lingo";
 import { createBasicTranslator } from "./basic";
 import { createOpenAI } from "@ai-sdk/openai";
+import { aimlapi } from "vercel-ai-aimlapi";
 import { colors } from "../constants";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -98,6 +99,17 @@ function getPureModelProvider(provider: I18nConfig["provider"]) {
       return createGoogleGenerativeAI({
         apiKey: process.env.GOOGLE_API_KEY,
       })(provider.model);
+    }
+    case "aimlapi": {
+      if (!process.env.AIMLAPI_API_KEY) {
+        throw new Error(
+          createMissingKeyErrorMessage("AI/ML API", "AIMLAPI_API_KEY"),
+        );
+      }
+      return aimlapi(provider.model, {
+        apiKey: process.env.AIMLAPI_API_KEY,
+        baseURL: provider.baseUrl ?? "https://api.aimlapi.com/v1",
+      });
     }
     case "openrouter": {
       if (!process.env.OPENROUTER_API_KEY) {

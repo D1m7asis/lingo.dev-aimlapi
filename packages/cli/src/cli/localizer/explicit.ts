@@ -1,6 +1,7 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
+import { aimlapi } from "vercel-ai-aimlapi";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { createMistral } from "@ai-sdk/mistral";
 import { I18nConfig } from "@lingo.dev/_spec";
@@ -57,6 +58,18 @@ export default function createExplicitLocalizer(
         prompt: provider.prompt,
         apiKeyName: "GOOGLE_API_KEY",
         baseUrl: provider.baseUrl,
+      });
+    case "aimlapi":
+      return createAiSdkLocalizer({
+        factory: (params) =>
+          aimlapi(provider.model, {
+            apiKey: params.apiKey,
+            baseURL: params.baseUrl,
+          }),
+        id: provider.id,
+        prompt: provider.prompt,
+        apiKeyName: "AIMLAPI_API_KEY",
+        baseUrl: provider.baseUrl ?? "https://api.aimlapi.com/v1",
       });
     case "openrouter":
       return createAiSdkLocalizer({
